@@ -1,0 +1,60 @@
+{
+  "id": 1418,
+  "name": "MeronSoda's BRDF red",
+  "fragment": "precision highp float;\n\nuniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\nuniform mat4 viewMatrix;\nuniform mat3 normalMatrix;\n\n// Custom uniforms\nuniform vec3 lightPosition;\nuniform vec3 lightColor;\nuniform float specular;\n\n// Passed in by THREE.js / ShaderFrog\nuniform vec3 cameraPosition;\n\nvarying vec3 vPosition;\nvarying vec3 vNormal;\n\n\nvoid main(void) {\n    #define M_PI 3.1415926535897932384626433832795\n    \n    \n    /* ====================================================\n     *   Materials (Fresnel)\n     * ==================================================== */\n    // Metal\n    vec3 TITANIUM = vec3(0.542,0.497,0.449);\n    vec3 CHROMIUM = vec3(0.549,0.556,0.554);\n    vec3 IRON = vec3(0.562,0.565,0.578);\n    vec3 NICKEL = vec3(0.660,0.609,0.526);\n    vec3 PLATINUM = vec3(0.673,0.637,0.585);\n    vec3 COPPER = vec3(0.955,0.638,0.538);\n    vec3 PALLADIUM = vec3(0.733,0.697,0.652);\n    vec3 ZINC = vec3(0.664,0.824,0.850);\n    vec3 GOLD = vec3(1.022,0.782,0.344);\n    vec3 ALUMINIUM = vec3(0.913,0.922,0.924);\n    vec3 SILVER = vec3(0.972,0.960,0.915);\n    \n    // Dieletric\n    vec3 WATER = vec3(0.020, 0.020, 0.020);\n    vec3 PLASTIC = vec3(0.040, 0.040, 0.040);\n    vec3 GLASS = vec3(0.045, 0.045, 0.045);\n    vec3 CRYSTAL = vec3(0.050, 0.050, 0.050);\n    vec3 GEMS = vec3(0.080, 0.080, 0.080);\n    vec3 DIAMOND1 = vec3(0.100, 0.100, 0.100);\n    vec3 DIAMOND2 = vec3(0.200, 0.200, 0.200);\n    \n    // Semiconductor\n    vec3 SILICON = vec3(0.345,0.369,0.426);\n    \n    \n    \n    /* ====================================================\n     *   Select Material\n     * ==================================================== */\n    vec3 selectedMaterial = vec3(0.7,0.369,0.426);;\n    \n    \n    \n    /* ====================================================\n     *   Select Constants\n     * ==================================================== */\n     float kAmbi = 0.05; // TODO\n     float kDiff = 0.1; // TODO\n     float kSpec = 2.0;\n    \n    \n    \n    /* ====================================================\n     *   Select Distribution Parameter\n     * ==================================================== */\n    float alpha = 0.2;\n    \n    \n    \n    /* ====================================================\n     *   Base Information\n     * ==================================================== */\n    vec3 vPos = vec3(modelMatrix * vec4(vPosition, 1.0));\n    vec3 normal = normalize(vec3(modelMatrix * vec4(vNormal, 0.0)));\n    vec3 view = normalize(cameraPosition - vPos);\n    vec3 light = normalize(lightPosition - vPos);\n    \n    \n    //// More useful info\n    // Half Normal\n    vec3 h = normalize(view + light);\n    \n    // Dot Products\n    float ndl0 = dot(normal, light);\n    float ndl = max( 0.0, ndl0 ) ;\n    float ndh = max(0.0, dot(normal, h));\n    float ndv = max(0.0, dot(normal, view));\n    float vdh = max(0.0, dot(view, h));\n    float ldh = max(0.0, dot(light, h));\n\n    \n    \n    /* ====================================================\n     *   Light Model\n     * ==================================================== */\n    ////// Ambient (TODO)\n    // Phong\n    vec3 ambient = selectedMaterial;\n    \n    \n    ////// Diffuse (TODO)\n    // Phong\n    vec3 diffuse = vec3(ndl) * selectedMaterial;\n    \n    \n    ////// Specular\n    //// BRDF\n    // Fresnel\n    vec3 fresnel = selectedMaterial + (vec3(1.0)-selectedMaterial) * pow( (1.0-ldh), 5.0 );\n    \n    // Geometry\n    float temp = 2.0*ndh/vdh;\n    float geometry = 1.0;                               // No Geometry Function\n    geometry = min(1.0, min(temp*ndv, temp*ndl));    // Gct\n    // geometry = max(0.0, ndl * ndv);                  // Gimplicit\n    \n    // Distribution (TODO)\n    float alpha2 = pow(alpha, 2.0);\n    float ndh2 = pow(ndh, 2.0);\n    \n    float distribution = 1.0;                                                               // No Distribution\n    // distribution = pow(ndh, alpha)*(alpha + 2.0)/(2.0*M_PI);                                // Dp\n    // distribution = 1.0/pow(ndh, 1.0+alpha*(1.0-ndh));                                       // Dabc1\n    // distribution = (1.0/(M_PI * alpha2 * ndh2*ndh2)) * exp(-( (1.0-ndh2)/(alpha2*ndh2) ));  // Db\n    distribution = alpha2/( M_PI * pow( ndh2 * ( alpha2 - 1.0 ) + 1.0 , 2.0 ) );            // Dtr\n    \n    \n    // Output (Specular)\n    vec3 spec = fresnel * geometry * distribution / (4.0*ndh);\n    float frontFace = float(ndl0 >= 0.0);\n    spec = vec3(frontFace) * spec;\n    \n    \n    ////// Gathering Pieces\n    vec3 finalColor = 3.0*kAmbi*ambient + kDiff*diffuse + kSpec*spec;\n    \n    \n    \n    /* ====================================================\n     *   Return value\n     * ==================================================== */\n    gl_FragColor = vec4( finalColor, 1.0 );\n    \n}",
+  "vertex": "precision highp float;\nprecision highp int;\n\nuniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\nuniform mat4 viewMatrix;\nuniform mat3 normalMatrix;\n\nattribute vec3 position;\nattribute vec3 normal;\nattribute vec2 uv;\nattribute vec2 uv2;\n\nvarying vec3 vPosition;\nvarying vec3 vNormal;\n\nvoid main() \n{\n    vNormal = normal;\n    vPosition = position;\n    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n}",
+  "uniforms": {
+    "lightPosition": {
+      "name": "lightPosition",
+      "displayName": null,
+      "value": {
+        "x": 3,
+        "y": 20,
+        "z": 20
+      },
+      "type": "v3",
+      "glslType": "vec3",
+      "useGridHelper": false,
+      "useRange": false,
+      "range": null,
+      "isRandom": false,
+      "randomRange": null,
+      "useToggle": false,
+      "toggle": null,
+      "description": ""
+    },
+    "specular": {
+      "name": "specular",
+      "displayName": null,
+      "type": "f",
+      "glslType": "float",
+      "useGridHelper": false,
+      "useRange": false,
+      "range": null,
+      "isRandom": false,
+      "randomRange": null,
+      "useToggle": false,
+      "toggle": null,
+      "description": ""
+    },
+    "lightColor": {
+      "name": "lightColor",
+      "displayName": null,
+      "type": "c",
+      "glslType": "vec3",
+      "useGridHelper": false,
+      "useRange": false,
+      "range": null,
+      "isRandom": false,
+      "randomRange": null,
+      "useToggle": false,
+      "toggle": null,
+      "description": ""
+    }
+  },
+  "url": "http://shaderfrog.com/app/view/1418",
+  "user": {
+    "username": "MeronSoda",
+    "url": "http://shaderfrog.com/app/profile/andrewray"
+  }
+}

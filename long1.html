@@ -1,0 +1,84 @@
+
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.js" charSet="utf-8"></script>
+        <script src="shaderfrog-runtime.min.js"></script>
+		 <script src="STLLoader.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/rainbow/1.2.0/themes/twilight.min.css">
+        <style>
+            html, body {
+                margin:0;
+                padding:0;
+                background: #333;
+                color:#fff;
+                font-family:sans-serif;
+                font-size:16px;
+            }
+
+            a, a:visited {
+                color:#aee239;
+                text-decoration:underline;
+            }
+
+            h1 a {
+                text-decoration:none;
+            }
+
+            #no_canvas {
+                box-shadow:0 0 10px #111;
+                width: 800px;
+                height: 600px;
+                margin:20px auto;
+            }
+
+            .wrap {
+                text-shadow: 1px 1px 0 #000;
+                width:800;
+                margin: 10px auto;
+            }
+
+            pre {
+                text-align:left;
+                background:#1a1a1a;
+                font-size:16px;
+                color:#fff;
+                padding:20px;
+                border-radius:4px;
+                box-shadow:inset 0 0 20px #000;
+            }
+        </style>
+    </head>
+    <body>
+
+         
+<!-- <p>Here is another <a href="sf2.zip">this</a> .zip file that show two .stl files, and two shaders.
+-->
+
+<div id="canvas"></div>
+
+
+    </body>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://threejs.org/build/three.module.js",
+                "three/addons/": "https://threejs.org/examples/jsm/"
+            }
+        }
+    </script>
+<!--
+    <script type="module">
+
+        import * as THREE from 'three';
+        
+        import Stats from 'three/addons/libs/stats.module.js';
+
+        import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+    </script> type = "module"
+-->
+    <script src="test1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rainbow/1.2.0/js/rainbow.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rainbow/1.2.0/js/language/generic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rainbow/1.2.0/js/language/javascript.min.js"></script>
+</html>

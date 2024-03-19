@@ -1,0 +1,89 @@
+{
+  "id": 2880,
+  "name": "Funny Bunny",
+  "fragment": "precision highp float;\nprecision highp int;\nuniform vec3 model_color;\nuniform vec3 plane_color;\nuniform vec3 ambient_color;\nuniform vec3 light_color;\nuniform vec3 light_position;\nuniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\nuniform mat4 viewMatrix;\nuniform mat3 normalMatrix;\nuniform vec3 cameraPosition;\nuniform float time;\nuniform vec3 color;\nuniform vec3 lightPosition;\nuniform float softness;\nvarying vec3 direct_ambient_single_bounce_from_infinite_plane1547559255143_175_vPosition;\nvarying vec3 direct_ambient_single_bounce_from_infinite_plane1547559255143_175_vNormal;\nvarying vec3 NdotL_lighting_with_softness1547559343520_198_vPosition;\nvarying vec3 NdotL_lighting_with_softness1547559343520_198_vNormal;\nvarying vec2 vUv;\nvarying vec2 vUv2;\nvec4 direct_ambient_single_bounce_from_infinite_plane1547559255143_175_main() \n                {\n                    vec4 direct_ambient_single_bounce_from_infinite_plane1547559255143_175_gl_FragColor = vec4(0.0);\n                    vec3 pos = direct_ambient_single_bounce_from_infinite_plane1547559255143_175_vPosition;\n                    vec3 N = normalize(direct_ambient_single_bounce_from_infinite_plane1547559255143_175_vNormal);\n                    vec3 L = normalize(light_position);\n                    vec3 up_color = ambient_color * ambient_color;\n                    vec3 down_color = (up_color + light_color * light_color * max(0.0, L.y)) * plane_color * plane_color;\n                    float occlusion = dot(N, normalize(pos)) * 0.5 + 0.5;\n                    vec3 direct = max(0.0, dot(N, L)) * light_color * light_color;\n                    vec3 ambient = mix(down_color, up_color, N.y * 0.5 + 0.5) * occlusion * occlusion;\n                    vec3 color = (direct + ambient) * model_color * model_color;\n                    if (pos.y < -40.6) \n                    {\n                        color = down_color;\n                    }\n                     direct_ambient_single_bounce_from_infinite_plane1547559255143_175_gl_FragColor = vec4(sqrt(color), 1.0);\n                    return direct_ambient_single_bounce_from_infinite_plane1547559255143_175_gl_FragColor *= 1.0;\n                }\nvec4 NdotL_lighting_with_softness1547559343520_198_main() \n                {\n                    vec4 NdotL_lighting_with_softness1547559343520_198_gl_FragColor = vec4(0.0);\n                    vec3 worldPosition = (modelMatrix * vec4(NdotL_lighting_with_softness1547559343520_198_vPosition, 1.0)).xyz;\n                    vec3 worldNormal = normalize(vec3(modelMatrix * vec4(NdotL_lighting_with_softness1547559343520_198_vNormal, 0.0)));\n                    vec3 lightVector = normalize(lightPosition - worldPosition);\n                    float dotNL = dot(worldNormal, lightVector);\n                    dotNL = (dotNL + softness) / ((1.0 + softness) * (1.0 + softness));\n                    NdotL_lighting_with_softness1547559343520_198_gl_FragColor = vec4(color * dotNL, 1.0);\n                    return NdotL_lighting_with_softness1547559343520_198_gl_FragColor *= 1.0;\n                }\nvoid main() \n                {\n                    gl_FragColor = (direct_ambient_single_bounce_from_infinite_plane1547559255143_175_main() + NdotL_lighting_with_softness1547559343520_198_main());                }\n",
+  "vertex": "precision highp float;\nprecision highp int;\nuniform mat4 modelMatrix;\nuniform mat4 modelViewMatrix;\nuniform mat4 projectionMatrix;\nuniform mat4 viewMatrix;\nuniform mat3 normalMatrix;\nuniform vec3 cameraPosition;\nuniform float time;\nattribute vec3 position;\nattribute vec3 normal;\nattribute vec2 uv;\nattribute vec2 uv2;\nvarying vec3 direct_ambient_single_bounce_from_infinite_plane1547559255143_175_vPosition;\nvarying vec3 direct_ambient_single_bounce_from_infinite_plane1547559255143_175_vNormal;\nvarying vec3 NdotL_lighting_with_softness1547559343520_198_vPosition;\nvarying vec3 NdotL_lighting_with_softness1547559343520_198_vNormal;\nvarying vec2 vUv;\nvarying vec2 vUv2;\nvec4 direct_ambient_single_bounce_from_infinite_plane1547559255143_175_main() \n                {\n                    vec4 direct_ambient_single_bounce_from_infinite_plane1547559255143_175_gl_Position = vec4(0.0);\n                    direct_ambient_single_bounce_from_infinite_plane1547559255143_175_vNormal = (modelMatrix * vec4(normal, 0.0)).xyz;\n                    direct_ambient_single_bounce_from_infinite_plane1547559255143_175_vPosition = (modelMatrix * vec4(position, 1.0)).xyz;\n                    direct_ambient_single_bounce_from_infinite_plane1547559255143_175_gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n                    return direct_ambient_single_bounce_from_infinite_plane1547559255143_175_gl_Position *= 1.0;\n                }\nvec4 NdotL_lighting_with_softness1547559343520_198_main() \n                {\n                    vec4 NdotL_lighting_with_softness1547559343520_198_gl_Position = vec4(0.0);\n                    NdotL_lighting_with_softness1547559343520_198_vNormal = normal;\n                    vUv = uv;\n                    vUv2 = uv2;\n                    NdotL_lighting_with_softness1547559343520_198_vPosition = position;\n                    NdotL_lighting_with_softness1547559343520_198_gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);\n                    return NdotL_lighting_with_softness1547559343520_198_gl_Position *= 1.0;\n                }\nvoid main() \n                {\n                    gl_Position = direct_ambient_single_bounce_from_infinite_plane1547559255143_175_main() + NdotL_lighting_with_softness1547559343520_198_main();                }\n",
+  "uniforms": {
+    "model_color": {
+      "value": {
+        "r": "1",
+        "g": "1",
+        "b": "1"
+      },
+      "type": "c",
+      "glslType": "vec3"
+    },
+    "plane_color": {
+      "value": {
+        "r": "0.63",
+        "g": "0.39",
+        "b": "0.22"
+      },
+      "type": "c",
+      "glslType": "vec3"
+    },
+    "ambient_color": {
+      "value": {
+        "r": "0.25",
+        "g": "0.25",
+        "b": "0.25"
+      },
+      "type": "c",
+      "glslType": "vec3"
+    },
+    "light_color": {
+      "value": {
+        "r": 0.3215686274509804,
+        "g": 0.9450980392156862,
+        "b": 1
+      },
+      "type": "c",
+      "glslType": "vec3"
+    },
+    "light_position": {
+      "value": {
+        "x": -0.979731531744356,
+        "y": -0.03643881126059812,
+        "z": -0.1969729391052799
+      },
+      "type": "v3",
+      "glslType": "vec3"
+    },
+    "cameraPosition": {
+      "type": "v3",
+      "glslType": "vec3"
+    },
+    "time": {
+      "type": "f",
+      "glslType": "float"
+    },
+    "color": {
+      "value": {
+        "r": 0.8862745098039215,
+        "g": 0.20784313725490197,
+        "b": 0.23137254901960785
+      },
+      "type": "c",
+      "glslType": "vec3"
+    },
+    "lightPosition": {
+      "value": {
+        "x": 0,
+        "y": 10.25,
+        "z": 1.25
+      },
+      "type": "v3",
+      "glslType": "vec3"
+    },
+    "softness": {
+      "value": "0",
+      "type": "f",
+      "glslType": "float"
+    }
+  },
+  "url": "http://shaderfrog.com/app/view/2880",
+  "user": {
+    "username": "SirFizX",
+    "url": "http://shaderfrog.com/app/profile/andrewray"
+  }
+}

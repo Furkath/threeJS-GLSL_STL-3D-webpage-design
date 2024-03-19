@@ -1,0 +1,22 @@
+{
+  "id": 25,
+  "name": "Star Field",
+  "fragment": "precision highp float;\r\nprecision highp int;\r\n\r\nuniform float time;\r\nvarying vec2 vUv;\r\n\r\n// A single iteration of Bob Jenkins' One-At-A-Time hashing algorithm.\r\nhighp float Rand(vec2 co)\r\n{\r\n    highp float a = 1552.9898;\r\n    highp float b = 78.233;\r\n    highp float c = 43758.5453;\r\n    highp float dt= dot(co.xy ,vec2(a,b));\r\n    highp float sn= mod(dt,3.14);\r\n    return fract(sin(sn) * c);\r\n}\r\nhighp float randzzw(vec2 st, float t)\r\n{\r\n    float t1 = fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123); return t1;\r\n}\r\nfloat iAspectRatio = 2.0;\r\nfloat Noise(vec2 UV, float Seed, vec2 Frequency){\r\n\tvec2 PerlinR = vec2(UV.x, UV.y) * vec2(Frequency);\r\n\thighp vec2 Perlin1Pos = vec2(floor(PerlinR.x), floor(PerlinR.y));\r\n\t\r\n\tfloat RandX0 = (Perlin1Pos.x+(Perlin1Pos.y)*Seed);\r\n\tfloat RandX1 = ((Perlin1Pos.x+1.0)+(Perlin1Pos.y)*Seed);\r\n\tfloat RandX2 = (Perlin1Pos.x+(Perlin1Pos.y+1.0)*Seed);\r\n\tfloat RandX3 = ((Perlin1Pos.x+1.0)+(Perlin1Pos.y+1.0)*Seed);\r\n\t\r\n\tfloat Perlin0Val = Rand(vec2(RandX0,RandX0*0.1224));\r\n\tfloat Perlin1Val = Rand(vec2(RandX1,RandX1*0.1224));\r\n\tfloat Perlin2Val = Rand(vec2(RandX2,RandX2*0.1224));\r\n\tfloat Perlin3Val = Rand(vec2(RandX3,RandX3*0.1224));\r\n\t\r\n\tvec2 Perc = (sin(((PerlinR - Perlin1Pos) * vec2(3.1415926)) - vec2(1.570796)) * vec2(0.5)) + vec2(0.5);\r\n\t\r\n\tfloat Val0to2 = (Perlin0Val*(1.0-Perc.y)) + (Perlin2Val*Perc.y); \r\n\tfloat Val1to3 = (Perlin1Val*(1.0-Perc.y)) + (Perlin3Val*Perc.y); \r\n\t\r\n\treturn (Val0to2 * (1.0-Perc.x)) + (Val1to3 * Perc.x);\t\r\n}\r\nfloat PerlinNoise1(vec2 UV, float Seed){\r\n\tfloat RetVal = 0.0;\r\n\tRetVal += Noise(UV, Seed * 1.2, vec2(2.0)) * 0.5;\r\n\tRetVal += Noise(UV, Seed * 1.4, vec2(5.0)) * 0.25;\r\n\tRetVal += Noise(UV, Seed * 1.1, vec2(10.0)) * 0.125;\r\n\tRetVal += Noise(UV, Seed * 1.5, vec2(24.0)) * 0.0625;\r\n\tRetVal += Noise(UV, Seed * 1.2, vec2(54.0)) * 0.03125;\r\n\tRetVal += Noise(UV, Seed * 1.3, vec2(128.0)) * 0.025625;\r\n\treturn RetVal;\r\n}\r\nfloat PerlinNoise2(vec2 UV, float Seed){\r\n\tfloat RetVal = 0.0;\r\n\tRetVal += Noise(UV, Seed * 1.2, vec2(6.0)) * 0.5;\r\n\tRetVal += Noise(UV, Seed * 1.4, vec2(12.0)) * 0.25;\r\n\tRetVal += Noise(UV, Seed * 1.1, vec2(24.0)) * 0.125;\r\n\tRetVal += Noise(UV, Seed * 1.5, vec2(40.0)) * 0.0625;\r\n\tRetVal += Noise(UV, Seed * 1.2, vec2(80.0)) * 0.03125;\r\n\tRetVal += Noise(UV, Seed * 1.3, vec2(158.0)) * 0.025625;\r\n\treturn RetVal;\r\n}\r\nvoid main(){\r\n\tvec2 UV = vUv;\r\n\t//UV *= vec2(2.1);\t\r\n\t\r\n\tvec2 TimeOffset = vec2(sin(time * 0.00962379), cos(time * 0.00962379)) * vec2(sin(time * 0.0041839) + 0.3);\r\n\tvec2 TempVec2A = TimeOffset;\r\n\tvec2 TempVec2B = vec2(0.0);\r\n\tvec2 TempVec2C = vec2(0.0);\r\n\tvec3 TempVec3A = vec3(0.0);\r\n\tTempVec2C.x = pow(1.0 - PerlinNoise1(UV + TempVec2A, 21.32143), 3.5);\r\n\tTempVec3A = vec3(TempVec2C.x) * vec3(0.25, 0.67, 0.5);\r\n\tTempVec2C.x = pow(((1.0 - PerlinNoise2(UV + (TempVec2A * vec2(1.15)), 12.523)) * TempVec2C.x), 1.1);\r\n\tTempVec3A += vec3(TempVec2C.x) * vec3(1.0, 0.0, 0.0);\r\n\t\r\n\tvec4 RetVal = vec4(0,0,0,1);\t\r\n\t if (randzzw(vec2(UV.x, UV.y),time) >0.8 )\r\n\t{TempVec2C.x = Rand(vec2(UV.x, UV.y));\r\n\tTempVec2C.y = Rand(vec2(UV.y, UV.x));\r\n\thighp float PowIn = ((sin(((time+10.0)*TempVec2C.x*1.7))*0.5)+0.5); \r\n\tRetVal.xyz = max(vec3(TempVec2C.x * pow(TempVec2C.y, 10.0) * pow(PowIn, 2.0) * 1.0), vec3(0.0)); }\r\n\tRetVal.xyz += TempVec3A;\r\n\r\n\tgl_FragColor = RetVal;\r\n\r\n}",
+  "vertex": "precision highp float;\r\nprecision highp int;\r\n\r\nuniform mat4 modelMatrix;\r\nuniform mat4 modelViewMatrix;\r\nuniform mat4 projectionMatrix;\r\n\r\nattribute vec3 position;\r\nattribute vec2 uv;\r\n\r\nvarying vec2 vUv;\r\n\r\nvoid main() {\r\n    vUv = uv;\r\n    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );\r\n}",
+  "uniforms": {
+    "time": {
+      "type": "f",
+      "glslType": "float",
+      "description": "",
+      "textureId": null,
+      "runtime": {
+        "texture": null
+      }
+    }
+  },
+  "url": "http://shaderfrog.com/app/view/25",
+  "user": {
+    "username": "andrewray",
+    "url": "http://shaderfrog.com/app/profile/andrewray"
+  }
+}
